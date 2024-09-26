@@ -1,0 +1,6 @@
+[submodule "external/tgui"]
+	path = external/tgui
+	url = https://github.com/texus/TGUI.git
+[submodule "external/yoga"]
+	path = external/yoga
+	url = https://github.com/facebook/yoga.git

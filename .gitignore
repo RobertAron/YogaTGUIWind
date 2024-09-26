@@ -1,0 +1,24 @@
+# Ignore build files
+/build/
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+*.a
+*.lib
+
+# Ignore CMake cache files
+CMakeCache.txt
+CMakeFiles/
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+# Ignore IDE specific files (optional, based on your IDE)
+.vscode/
+.idea/
+
+# Keep external folder, but ignore any build or cache files inside it
+/external/*/build/
