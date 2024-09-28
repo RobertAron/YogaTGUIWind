@@ -21,4 +21,4 @@ CMakeFiles/
 .idea/
 
 # Keep external folder, but ignore any build or cache files inside it
-/external/*/build/
+/external/*
