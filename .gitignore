@@ -20,5 +20,7 @@ CMakeFiles/
 .vscode/
 .idea/
 
-# Keep external folder, but ignore any build or cache files inside it
+# Ignore everything in external
 /external/*
+# Except Git submodules (which have .git files or directories)
+!/external/*/.git
