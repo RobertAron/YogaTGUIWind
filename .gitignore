@@ -21,6 +21,4 @@ CMakeFiles/
 .idea/
 
 # Ignore everything in external
-/external/*
-# Except Git submodules (which have .git files or directories)
-!/external/*/.git
+/external/*/build/
