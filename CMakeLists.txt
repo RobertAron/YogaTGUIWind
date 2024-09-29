@@ -15,7 +15,7 @@ message(STATUS "Build Type ${CMAKE_BUILD_TYPE}")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(TGUI_BUILD_FRAMEWORK FALSE)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(TGUI_BUILD_FRAMEWORK TRUE)
+  set(TGUI_BUILD_FRAMEWORK TRUE)
 endif()
 
 # Set compiler flags for Debug and Release builds
