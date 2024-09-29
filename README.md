@@ -12,17 +12,26 @@ If cloned without --recursive, run:
 git submodule update --init
 ```
 
+### wsl deps
+
+```
+sudo apt install libsfml-dev
+sudo apt install libfreetype6-dev
+sudo apt install clang-format
+```
+
+### mac deps
+
+```
+brew install sfml
+brew install freetype
+brew install clang-format
+```
+
 How to Build
 
 ```bash
-mkdir build && cd build
-cmake ..
-cmake --build .
+./dev.sh
 ```
 
-How to Run
 
-```bash
-cd build
-./main
-```

@@ -1,31 +1,58 @@
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
-#include <TGUI/TGUI.hpp>
-#include <TGUI/Backend/SFML-OpenGL3.hpp>
-#include <yoga/Yoga.h>
 #include <stdio.h>
+#include <yoga/Yoga.h>
+#include <SFML/OpenGL.hpp>
+#include <SFML/Window.hpp>
+#include <TGUI/Backend/SFML-OpenGL3.hpp>
+#include <TGUI/TGUI.hpp>
 #include <memory>
 #include <vector>
 
 #define GL_SILENCE_DEPRECATION // Suppress OpenGL deprecation warnings on macOS
 
+// enum YGStyleProperty
+// {
+//   FLEX,
+//   FLEX_COL,
+//   GAP_2,
+//   // align - items
+//   ITEMS_STRETCH,
+//   ITEMS_START,
+//   ITEMS_CENTER,
+//   ITEMS_END,
+// };
+
 class DomNode
 {
 public:
-  virtual std::vector<tgui::Widget::Ptr> ApplyLayout() = 0;
+  virtual void ApplyLayout(tgui::Gui &gui) = 0;
   virtual ~DomNode() {}
   YGNodeRef m_yogaNode;
+
+  // Static method to create a shared_ptr for DomNode or its derived classes
+  template <typename T, typename... Args>
+  static std::shared_ptr<T> make(Args &&...args)
+  {
+    static_assert(std::is_base_of<DomNode, T>::value, "T must derive from DomNode");
+    return std::make_shared<T>(std::forward<Args>(args)...);
+  }
+
+  // Static method to create a vector of shared_ptr<DomNode>
+  template <typename... T>
+  static std::vector<std::shared_ptr<DomNode>> c(T &&...nodes)
+  {
+    return {std::forward<T>(nodes)...};
+  }
 };
 
 class RootNode : public DomNode
 {
 public:
-  RootNode(sf::Vector2u windowSize, std::vector<std::shared_ptr<DomNode>> children)
+  RootNode(
+      std::vector<std::shared_ptr<DomNode>> children)
       : children(std::move(children))
   {
     m_yogaNode = YGNodeNew();
-    YGNodeStyleSetWidth(m_yogaNode, windowSize.x);
-    YGNodeStyleSetHeight(m_yogaNode, windowSize.y);
+
     YGNodeStyleSetFlexDirection(m_yogaNode, YGFlexDirectionColumn);
     for (size_t i = 0; i < this->children.size(); i++)
     {
@@ -33,15 +60,21 @@ public:
     }
   }
 
-  std::vector<tgui::Widget::Ptr> ApplyLayout() override
+  void Update(sf::Vector2u windowSize, tgui::Gui &gui)
   {
-    std::vector<tgui::Widget::Ptr> results;
+    YGNodeStyleSetWidth(m_yogaNode, windowSize.x);
+    YGNodeStyleSetHeight(m_yogaNode, windowSize.y);
+    YGNodeCalculateLayout(
+        m_yogaNode, windowSize.x, windowSize.y, YGDirectionLTR);
+    ApplyLayout(gui);
+  }
+
+  void ApplyLayout(tgui::Gui &gui) override
+  {
     for (auto &child : children)
     {
-      auto widgets = child->ApplyLayout();
-      results.insert(results.end(), widgets.begin(), widgets.end());
+      child->ApplyLayout(gui);
     }
-    return results;
   }
 
 private:
@@ -59,14 +92,16 @@ public:
     YGNodeStyleSetMargin(m_yogaNode, YGEdgeAll, 10);
   }
 
-  std::vector<tgui::Widget::Ptr> ApplyLayout() override
+  void ApplyLayout(tgui::Gui &gui) override
   {
-    auto position = tgui::Layout2d{YGNodeLayoutGetLeft(m_yogaNode), YGNodeLayoutGetTop(m_yogaNode)};
-    auto size = tgui::Layout2d{YGNodeLayoutGetWidth(m_yogaNode), YGNodeLayoutGetHeight(m_yogaNode)};
+    auto position = tgui::Layout2d{YGNodeLayoutGetLeft(m_yogaNode),
+                                   YGNodeLayoutGetTop(m_yogaNode)};
+    auto size = tgui::Layout2d{YGNodeLayoutGetWidth(m_yogaNode),
+                               YGNodeLayoutGetHeight(m_yogaNode)};
     auto button = tgui::Button::create("Button 1");
     button->setPosition(position);
     button->setSize(size);
-    return std::vector<tgui::Widget::Ptr>{button};
+    gui.add(button);
   }
 };
 
@@ -76,21 +111,19 @@ int main()
   settings.attributeFlags = sf::ContextSettings::Attribute::Core;
   settings.majorVersion = 3;
   settings.minorVersion = 3;
-  sf::Window window(sf::VideoMode(800, 600), "TGUI + Yoga + OpenGL Example", sf::Style::Default, settings);
+  sf::Window window(sf::VideoMode(800, 600),
+                    "TGUI + Yoga + OpenGL Example",
+                    sf::Style::Default,
+                    settings);
   tgui::Gui gui{window};
 
-  auto root = std::make_shared<RootNode>(window.getSize(), std::vector<std::shared_ptr<DomNode>>{
-                                                               std::make_shared<ButtonNode>(),
-                                                               std::make_shared<ButtonNode>(),
-                                                               std::make_shared<ButtonNode>()});
-
+  auto root = DomNode::make<RootNode>(
+      DomNode::c(
+          DomNode::make<ButtonNode>(),
+          DomNode::make<ButtonNode>(),
+          DomNode::make<ButtonNode>()));
   auto windowSize = window.getSize();
-  YGNodeCalculateLayout(root->m_yogaNode, windowSize.x, windowSize.y, YGDirectionLTR);
-  auto widgets = root->ApplyLayout();
-  for (auto &widget : widgets)
-  {
-    gui.add(widget);
-  }
+  root->Update(windowSize, gui);
 
   while (window.isOpen())
   {
