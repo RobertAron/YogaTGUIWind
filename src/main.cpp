@@ -9,17 +9,27 @@
 
 #define GL_SILENCE_DEPRECATION // Suppress OpenGL deprecation warnings on macOS
 
-// enum YGStyleProperty
-// {
-//   FLEX,
-//   FLEX_COL,
-//   GAP_2,
-//   // align - items
-//   ITEMS_STRETCH,
-//   ITEMS_START,
-//   ITEMS_CENTER,
-//   ITEMS_END,
-// };
+enum YGStyleProperty
+{
+  FLEX,
+  FLEX_ROW,
+  FLEX_COL,
+  GAP_2,
+  // align - items
+  ITEMS_STRETCH,
+  ITEMS_START,
+  ITEMS_CENTER,
+  ITEMS_END,
+  ITEMS_BASELINE,
+  // size
+  W_FULL,
+  H_FULL,
+  H_1,
+  H_2,
+  H_3,
+  H_4,
+  GROW
+};
 
 class DomNode
 {
@@ -27,14 +37,6 @@ public:
   virtual void ApplyLayout(tgui::Gui &gui) = 0;
   virtual ~DomNode() {}
   YGNodeRef m_yogaNode;
-
-  // Static method to create a shared_ptr for DomNode or its derived classes
-  template <typename T, typename... Args>
-  static std::shared_ptr<T> make(Args &&...args)
-  {
-    static_assert(std::is_base_of<DomNode, T>::value, "T must derive from DomNode");
-    return std::make_shared<T>(std::forward<Args>(args)...);
-  }
 
   // Static method to create a vector of shared_ptr<DomNode>
   template <typename... T>
@@ -77,6 +79,101 @@ public:
     }
   }
 
+  static std::shared_ptr<RootNode> make(std::vector<std::shared_ptr<DomNode>> children)
+  {
+    return std::make_shared<RootNode>(std::move(children));
+  }
+
+private:
+  std::vector<std::shared_ptr<DomNode>> children;
+};
+
+void ApplyStyles(const std::vector<YGStyleProperty> &styles, YGNodeRef node)
+{
+  for (const auto &style : styles)
+  {
+    switch (style)
+    {
+    case FLEX:
+      YGNodeStyleSetFlex(node, 1.0f);
+      break;
+    case FLEX_ROW:
+      YGNodeStyleSetFlexDirection(node, YGFlexDirectionRow);
+      break;
+    case FLEX_COL:
+      YGNodeStyleSetFlexDirection(node, YGFlexDirectionColumn);
+      break;
+    case GAP_2:
+      YGNodeStyleSetGap(node, YGGutterAll, 2.0f);
+      break;
+    case ITEMS_STRETCH:
+      YGNodeStyleSetAlignItems(node, YGAlignStretch);
+      break;
+    case ITEMS_START:
+      YGNodeStyleSetAlignItems(node, YGAlignFlexStart);
+      break;
+    case ITEMS_CENTER:
+      YGNodeStyleSetAlignItems(node, YGAlignCenter);
+      break;
+    case ITEMS_END:
+      YGNodeStyleSetAlignItems(node, YGAlignFlexEnd);
+      break;
+    case ITEMS_BASELINE:
+      YGNodeStyleSetAlignItems(node, YGAlignBaseline);
+      break;
+    case W_FULL:
+      YGNodeStyleSetWidthPercent(node, 100.0f);
+      break;
+    case H_FULL:
+      YGNodeStyleSetHeightPercent(node, 100.0f);
+      break;
+    case H_1:
+      YGNodeStyleSetHeight(node, 10.0f);
+      break;
+    case GROW:
+      YGNodeStyleSetFlexGrow(node, 1.0f);
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+class ContainerNode : public DomNode
+{
+public:
+  ContainerNode(const std::vector<YGStyleProperty> &styles, std::vector<std::shared_ptr<DomNode>> children)
+      : children(std::move(children))
+  {
+    std::cout << "making container" << std::endl;
+    m_yogaNode = YGNodeNew();
+    ApplyStyles(styles, m_yogaNode);
+    for (size_t i = 0; i < this->children.size(); i++)
+    {
+      YGNodeInsertChild(m_yogaNode, this->children[i]->m_yogaNode, i);
+    }
+  }
+  void ApplyLayout(tgui::Gui &gui) override
+  {
+
+    float left = YGNodeLayoutGetLeft(m_yogaNode);
+    float top = YGNodeLayoutGetTop(m_yogaNode);
+    float width = YGNodeLayoutGetWidth(m_yogaNode);
+    float height = YGNodeLayoutGetHeight(m_yogaNode);
+    std::cout << "applying container layout" << std::endl;
+    std::cout << "Container Layout - Left: " << left << ", Top: " << top
+              << ", Width: " << width << ", Height: " << height << std::endl;
+    for (auto &child : children)
+    {
+      child->ApplyLayout(gui);
+    }
+  }
+
+  static std::shared_ptr<ContainerNode> make(const std::vector<YGStyleProperty> &styles, std::vector<std::shared_ptr<DomNode>> children)
+  {
+    return std::make_shared<ContainerNode>(styles, std::move(children));
+  }
+
 private:
   std::vector<std::shared_ptr<DomNode>> children;
 };
@@ -84,24 +181,32 @@ private:
 class ButtonNode : public DomNode
 {
 public:
-  ButtonNode()
+  ButtonNode(const std::vector<YGStyleProperty> &styles)
   {
     m_yogaNode = YGNodeNew();
-    YGNodeStyleSetWidthPercent(m_yogaNode, 100);
-    YGNodeStyleSetHeightPercent(m_yogaNode, 30);
-    YGNodeStyleSetMargin(m_yogaNode, YGEdgeAll, 10);
+    ApplyStyles(styles, m_yogaNode);
   }
 
   void ApplyLayout(tgui::Gui &gui) override
   {
-    auto position = tgui::Layout2d{YGNodeLayoutGetLeft(m_yogaNode),
-                                   YGNodeLayoutGetTop(m_yogaNode)};
-    auto size = tgui::Layout2d{YGNodeLayoutGetWidth(m_yogaNode),
-                               YGNodeLayoutGetHeight(m_yogaNode)};
+
+    float left = YGNodeLayoutGetLeft(m_yogaNode);
+    float top = YGNodeLayoutGetTop(m_yogaNode);
+    float width = YGNodeLayoutGetWidth(m_yogaNode);
+    float height = YGNodeLayoutGetHeight(m_yogaNode);
+
+    std::cout << "applying button layout" << std::endl;
+    std::cout << "button Layout - Left: " << left << ", Top: " << top
+              << ", Width: " << width << ", Height: " << height << std::endl;
     auto button = tgui::Button::create("Button 1");
-    button->setPosition(position);
-    button->setSize(size);
+    button->setPosition(left, top);
+    button->setSize(width, height);
     gui.add(button);
+  }
+
+  static std::shared_ptr<ButtonNode> make(const std::vector<YGStyleProperty> &styles)
+  {
+    return std::make_shared<ButtonNode>(styles);
   }
 };
 
@@ -117,11 +222,14 @@ int main()
                     settings);
   tgui::Gui gui{window};
 
-  auto root = DomNode::make<RootNode>(
+  auto root = RootNode::make(
       DomNode::c(
-          DomNode::make<ButtonNode>(),
-          DomNode::make<ButtonNode>(),
-          DomNode::make<ButtonNode>()));
+          ContainerNode::make(
+              std::vector<YGStyleProperty>{H_FULL, W_FULL, FLEX, FLEX_COL, GAP_2},
+              DomNode::c(
+                  ButtonNode::make(std::vector<YGStyleProperty>{H_1}),
+                  ButtonNode::make(std::vector<YGStyleProperty>{H_1}),
+                  ButtonNode::make(std::vector<YGStyleProperty>{H_1})))));
   auto windowSize = window.getSize();
   root->Update(windowSize, gui);
 
