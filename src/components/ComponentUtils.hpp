@@ -23,7 +23,16 @@ enum YGStyleProperty
   FLEX,
   FLEX_ROW,
   FLEX_COL,
+  GAP_1,
   GAP_2,
+  GAP_3,
+  GAP_4,
+  GAP_5,
+  GAP_6,
+  GAP_7,
+  GAP_8,
+  GAP_9,
+  GAP_10,
   ITEMS_STRETCH,
   ITEMS_START,
   ITEMS_CENTER,
@@ -53,8 +62,22 @@ inline void ApplyStyles(const std::vector<YGStyleProperty> &styles, YGNodeRef no
        { YGNodeStyleSetFlexDirection(node, YGFlexDirectionRow); }},
       {FLEX_COL, [](YGNodeRef node)
        { YGNodeStyleSetFlexDirection(node, YGFlexDirectionColumn); }},
+      {GAP_1, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 4.0f); }},
       {GAP_2, [](YGNodeRef node)
-       { YGNodeStyleSetGap(node, YGGutterAll, 2.0f); }},
+       { YGNodeStyleSetGap(node, YGGutterAll, 8.0f); }},
+      {GAP_3, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 12.0f); }},
+      {GAP_4, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 16.0f); }},
+      {GAP_5, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 20.0f); }},
+      {GAP_6, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 24.0f); }},
+      {GAP_8, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 32.0f); }},
+      {GAP_10, [](YGNodeRef node)
+       { YGNodeStyleSetGap(node, YGGutterAll, 40.0f); }},
       {ITEMS_STRETCH, [](YGNodeRef node)
        { YGNodeStyleSetAlignItems(node, YGAlignStretch); }},
       {ITEMS_START, [](YGNodeRef node)

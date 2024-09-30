@@ -29,12 +29,12 @@ int main()
   auto root = RootNode::make(
       DomNode::c(
           ContainerNode::make(
-              SX(H_FULL, W_FULL, FLEX, FLEX_COL, GAP_2),
+              SX(H_FULL, W_FULL, FLEX, FLEX_COL, GAP_4),
               DomNode::c(
                   ButtonNode::make(SX(H_1)),
                   ButtonNode::make(SX(H_1)),
-                  ButtonNode::make(SX(H_1)),
-                  LabelNode::make(SX(H_1), "Hello world!!")))));
+                  ButtonNode::make(SX(H_1,GROW)),
+                  LabelNode::make(SX(GROW), "Hello world!! asdofij asdofij asod faosdfiasdf aosdofijasdofiasdf asdfoaisdfajsdf asdf aosdifjasdf asdfasjdfaosidf asdfaosdfajsdf asd fasdjfasodifajisdf asdfjasdfoasdfasdf as df asdfoasdifajsdf")))));
   auto windowSize = window.getSize();
   root->Update(windowSize, gui);
 
