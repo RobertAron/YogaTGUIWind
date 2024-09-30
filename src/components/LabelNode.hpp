@@ -6,6 +6,7 @@ class LabelNode : public DomNode
 public:
     LabelNode(const std::vector<YGStyleProperty> &styles, const std::string &text)
     {
+        std::cout << text << std::endl;
         m_yogaNode = YGNodeNew();
         m_label = tgui::Label::create(text);
         ApplyStyles(styles, m_yogaNode);
@@ -21,15 +22,15 @@ public:
         float width = YGNodeLayoutGetWidth(m_yogaNode);
         float height = YGNodeLayoutGetHeight(m_yogaNode);
 
-        m_label->getRenderer()->setTextColor(tgui::Color::White);
+        m_label->getRenderer()->setTextColor(tgui::Color::Green);
         m_label->getRenderer()->setBackgroundColor(tgui::Color::Blue);
         m_label->setPosition(left, top);
         m_label->setSize(width, height);
         gui.add(m_label);
     }
-    static std::shared_ptr<LabelNode> make(const std::vector<YGStyleProperty> &styles, const std::string &text)
+    static std::unique_ptr<LabelNode> make(const std::vector<YGStyleProperty> &styles, const std::string &text)
     {
-        return std::make_shared<LabelNode>(styles, text);
+        return std::make_unique<LabelNode>(styles, text);
     }
 
 private:

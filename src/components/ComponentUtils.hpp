@@ -10,11 +10,13 @@ public:
   virtual ~DomNode() {}
   YGNodeRef m_yogaNode;
 
-  // Static method to create a vector of shared_ptr<DomNode>
+  // Shortened name 'c' for creating children
   template <typename... T>
-  static std::vector<std::shared_ptr<DomNode>> c(T &&...nodes)
+  static std::vector<std::unique_ptr<DomNode>> c(T &&...nodes)
   {
-    return {std::forward<T>(nodes)...};
+    std::vector<std::unique_ptr<DomNode>> children;
+    (children.emplace_back(std::forward<T>(nodes)), ...);
+    return children;
   }
 };
 
@@ -38,19 +40,27 @@ enum YGStyleProperty
   ITEMS_CENTER,
   ITEMS_END,
   ITEMS_BASELINE,
+  JUSTIFY_START,
+  JUSTIFY_CENTER,
+  JUSTIFY_END,
+  JUSTIFY_BETWEEN,
+  JUSTIFY_AROUND,
+  JUSTIFY_EVENLY,
   W_FULL,
   H_FULL,
   H_1,
   GROW
 };
 
-inline std::vector<YGStyleProperty> SX() {
-    return {};  // Empty vector for no styles
+inline std::vector<YGStyleProperty> SX()
+{
+  return {}; // Empty vector for no styles
 }
 
-template<typename... Styles>
-inline std::vector<YGStyleProperty> SX(Styles... styles) {
-    return {styles...};  // Vector with styles passed
+template <typename... Styles>
+inline std::vector<YGStyleProperty> SX(Styles... styles)
+{
+  return {styles...}; // Vector with styles passed
 }
 
 inline void ApplyStyles(const std::vector<YGStyleProperty> &styles, YGNodeRef node)
@@ -88,8 +98,18 @@ inline void ApplyStyles(const std::vector<YGStyleProperty> &styles, YGNodeRef no
        { YGNodeStyleSetAlignItems(node, YGAlignFlexEnd); }},
       {ITEMS_BASELINE, [](YGNodeRef node)
        { YGNodeStyleSetAlignItems(node, YGAlignBaseline); }},
-      {W_FULL, [](YGNodeRef node)
-       { YGNodeStyleSetWidthPercent(node, 100.0f); }},
+      {JUSTIFY_START, [](YGNodeRef node)
+       { YGNodeStyleSetJustifyContent(node, YGJustifyFlexStart); }},
+      {JUSTIFY_CENTER, [](YGNodeRef node)
+       { YGNodeStyleSetJustifyContent(node, YGJustifyCenter); }},
+      {JUSTIFY_END, [](YGNodeRef node)
+       { YGNodeStyleSetJustifyContent(node, YGJustifyFlexEnd); }},
+      {JUSTIFY_BETWEEN, [](YGNodeRef node)
+       { YGNodeStyleSetJustifyContent(node, YGJustifySpaceAround); }},
+      {JUSTIFY_AROUND, [](YGNodeRef node)
+       { YGNodeStyleSetJustifyContent(node, YGJustifySpaceBetween); }},
+      {JUSTIFY_EVENLY, [](YGNodeRef node)
+       { YGNodeStyleSetHeightPercent(node, 100.0f); }},
       {H_FULL, [](YGNodeRef node)
        { YGNodeStyleSetHeightPercent(node, 100.0f); }},
       {H_1, [](YGNodeRef node)
