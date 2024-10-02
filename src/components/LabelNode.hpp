@@ -1,60 +1,64 @@
 #pragma once
 #include "ComponentUtils.hpp"
 
-class LabelNode : public DomNode
-{
+class LabelNode : public DomNode {
 public:
-    LabelNode(const std::vector<YGStyleProperty> &styles, const std::string &text)
-    {
-        std::cout << text << std::endl;
-        m_yogaNode = YGNodeNew();
-        m_label = tgui::Label::create(text);
-        ApplyStyles(styles, m_yogaNode);
-        YGNodeSetContext(m_yogaNode, m_label.get());
-        YGNodeSetMeasureFunc(m_yogaNode, &MeasureWidget);
-        YGNodeMarkDirty(m_yogaNode);
+  LabelNode(const std::vector<YGStyleProperty> &styles,
+            const std::string &text) {
+    m_yogaNode = YGNodeNew();
+    m_label = tgui::Label::create(text);
+    m_label->setIgnoreMouseEvents(true);
+    auto renderer = m_label->getRenderer();
+    ApplyStyles(styles, m_yogaNode);
+    ApplyStyles(styles, renderer);
+    YGNodeSetContext(m_yogaNode, m_label.get());
+    YGNodeSetMeasureFunc(m_yogaNode, &MeasureWidget);
+    YGNodeMarkDirty(m_yogaNode);
+    // clang-format off
+    static const std::unordered_map<YGStyleProperty,std::function<void(tgui::LabelRenderer *)>> styleMap = {
+      {TEXT_WHITE,    [](tgui::LabelRenderer * renderer) { renderer->setTextColor(tgui::Color::White); }},
+      {TEXT_BLACK,    [](tgui::LabelRenderer * renderer) { renderer->setTextColor(tgui::Color::Black); }},
+    };
+    // clang-format on
+    for (const auto &style : styles) {
+      auto it = styleMap.find(style);
+      if (it != styleMap.end()) {
+        it->second(renderer);
+      }
     }
+  }
 
-    void ApplyLayout(tgui::Gui &gui) override
-    {
-        float left = YGNodeLayoutGetLeft(m_yogaNode);
-        float top = YGNodeLayoutGetTop(m_yogaNode);
-        float width = YGNodeLayoutGetWidth(m_yogaNode);
-        float height = YGNodeLayoutGetHeight(m_yogaNode);
+  void AddToGui(tgui::Gui &gui) override { gui.add(m_label); }
 
-        m_label->getRenderer()->setTextColor(tgui::Color::Green);
-        m_label->getRenderer()->setBackgroundColor(tgui::Color::Blue);
-        m_label->setPosition(left, top);
-        m_label->setSize(width, height);
-        gui.add(m_label);
-    }
-    static std::unique_ptr<LabelNode> make(const std::vector<YGStyleProperty> &styles, const std::string &text)
-    {
-        return std::make_unique<LabelNode>(styles, text);
-    }
+  void ApplyLayout() override {
+    float left = YGNodeLayoutGetLeft(m_yogaNode);
+    float top = YGNodeLayoutGetTop(m_yogaNode);
+    float width = YGNodeLayoutGetWidth(m_yogaNode);
+    float height = YGNodeLayoutGetHeight(m_yogaNode);
+    m_label->setPosition(left, top);
+    m_label->setSize(width, height);
+  }
+  static std::unique_ptr<LabelNode>
+  make(const std::vector<YGStyleProperty> &styles, const std::string &text) {
+    return std::make_unique<LabelNode>(styles, text);
+  }
 
 private:
-    tgui::Label::Ptr m_label;
-    static YGSize MeasureWidget(
-        YGNodeConstRef node,
-        float width,
-        YGMeasureMode widthMode,
-        float height,
-        YGMeasureMode heightMode)
-    {
-        auto label = static_cast<tgui::Label *>(YGNodeGetContext(node)); // Retrieve the label from context
-        label->setAutoSize(true);
-        // for max width
-        if (widthMode == YGMeasureModeExactly)
-            label->setMaximumTextWidth(width);
-        else if (widthMode == YGMeasureModeAtMost)
-            label->setMaximumTextWidth(width);
-        // height will always be minimum needed from there.
-        // If the actual height gets set lower, it will scroll.
-        auto size = label->getSize();
-
-        return YGSize{
-            .width = size.x,
-            .height = size.y};
-    }
+  tgui::Label::Ptr m_label;
+  static YGSize MeasureWidget(YGNodeConstRef node, float width,
+                              YGMeasureMode widthMode, float height,
+                              YGMeasureMode heightMode) {
+    auto label = static_cast<tgui::Label *>(
+        YGNodeGetContext(node)); // Retrieve the label from context
+    label->setAutoSize(true);
+    // for max width
+    if (widthMode == YGMeasureModeExactly)
+      label->setMaximumTextWidth(width);
+    else if (widthMode == YGMeasureModeAtMost)
+      label->setMaximumTextWidth(width);
+    // height will always be minimum needed from there.
+    // If the actual height gets set lower, it will scroll.
+    auto size = label->getSize();
+    return YGSize{.width = size.x, .height = size.y};
+  }
 };

@@ -1,0 +1,34 @@
+SpaceBeforeParensOptions:
+  AfterPlacementOperator: false    
+  AfterFunctionDefinitionName: false
+  AfterFunctionDeclarationName: false
+  AfterControlStatements: true
+
+BraceWrapping:
+  AfterEnum: false
+  AfterClass: false
+  AfterUnion: false
+  BeforeElse: false
+  BeforeWhile: false
+  AfterStruct: false
+  BeforeCatch: false
+  AfterFunction: false
+  AfterCaseLabel: false
+  AfterNamespace: false
+  AfterExternBlock: false
+  SplitEmptyRecord: false
+  SplitEmptyFunction: false
+  SplitEmptyNamespace: false
+  AfterControlStatement: Never
+
+AlignConsecutiveShortCaseStatements:
+  Enabled: true 
+  AcrossComments: true 
+  AlignCaseColons: true 
+  AcrossEmptyLines: true 
+
+AlignTrailingComments: 
+  Kind: Always
+  OverEmptyLines: 2
+
+---

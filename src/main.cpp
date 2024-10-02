@@ -16,8 +16,7 @@
 
 #define GL_SILENCE_DEPRECATION // Suppress OpenGL deprecation warnings on macOS
 
-int main()
-{
+int main() {
   sf::ContextSettings settings;
   settings.attributeFlags = sf::ContextSettings::Attribute::Core;
   settings.majorVersion = 3;
@@ -28,30 +27,35 @@ int main()
 
   // clang-format off
   auto root = RootNode::make(
-    ContainerNode::make(SX(H_FULL, W_FULL, FLEX, FLEX_COL, GAP_4),
-      ButtonNode::make(SX(FLEX, ITEMS_CENTER, JUSTIFY_CENTER),
-        LabelNode::make(SX(), "Hello world!! Button")
+    ContainerNode::make(SX(H_FULL, W_FULL, FLEX, FLEX_ROW),
+      ContainerNode::make(SX(BG_BLACK, W_96, FLEX, FLEX_COL, JUSTIFY_END),
+        LabelNode::make(SX(TEXT_LG, TEXT_WHITE),
+          "Some title here!"
+        ),
+        LabelNode::make(SX(TEXT_BASE, TEXT_WHITE),
+          "Some subtitle information goes here."
+        )
       ),
-      ButtonNode::make(SX(H_1)),
-      LabelNode::make(SX(),
-        "Hello world!! asdofij asdofij asod faosdfiasdf aosdofijasdofiasdf asdfoaisdfajsdf asdf aosdifjasdf asdfasjdfaosidf asdfaosdfajsdf asd fasdjfasodifajisdf asdfjasdfoasdfasdf as df asdfoasdifajsdf"
+      ContainerNode::make(SX(BG_SLATE_950, FLEX, FLEX_COL, JUSTIFY_END, GROW)
+        // ButtonNode::make(SX(H_12,W_12))
       )
     )
   );
   // clang-format on
-  auto windowSize = window.getSize();
-  root->Update(windowSize, gui);
 
-  while (window.isOpen())
-  {
+  auto windowSize = window.getSize();
+  root->AddToGui(gui);
+  root->Update(windowSize);
+
+  while (window.isOpen()) {
     sf::Event event;
-    while (window.pollEvent(event))
-    {
+    while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed)
         window.close();
       gui.handleEvent(event);
     }
-
+    auto windowSize = window.getSize();
+    root->Update(windowSize);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gui.draw();
     window.display();
