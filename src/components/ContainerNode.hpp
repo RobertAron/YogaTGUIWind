@@ -44,10 +44,6 @@ public:
     float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
-    std::cout << "Container" << std::endl;
-    LogNode(PositionStruct(left, top, width, height));
-
-
     m_panel->setPosition(left, top);
     m_panel->setSize(width, height);
     for (auto &child : children) {

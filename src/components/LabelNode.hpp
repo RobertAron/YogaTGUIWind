@@ -34,9 +34,6 @@ public:
     float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
-    std::cout << "Label" << std::endl;
-    LogNode(PositionStruct(left, top, width, height));
-
     m_label->setPosition(left, top);
     m_label->setSize(width, height);
   }
@@ -54,7 +51,6 @@ private:
         YGNodeGetContext(node)); // Retrieve the label from context
     label->setMaximumTextWidth(0);
     label->setAutoSize(true);
-    std::cout << label->getText() << std::endl;
     auto labelAutoSize = label->getSize();
     // for max width
     if (widthMode == YGMeasureModeExactly) {
