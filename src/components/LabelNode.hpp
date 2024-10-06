@@ -52,6 +52,7 @@ private:
                               YGMeasureMode heightMode) {
     auto label = static_cast<tgui::Label *>(
         YGNodeGetContext(node)); // Retrieve the label from context
+    label->setMaximumTextWidth(0);
     label->setAutoSize(true);
     std::cout << label->getText() << std::endl;
     auto labelAutoSize = label->getSize();
