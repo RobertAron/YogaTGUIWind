@@ -34,9 +34,9 @@ else
     exit 1
 fi
 
-# Run CMake to configure and build the project
-cmake ..  # Adjust as necessary for your project
-cmake --build .
+# Run CMake to configure and build the project using Ninja
+cmake -G Ninja ..
+ninja -v  # Verbose build process
 
 # Run the compiled binary
 if [[ "$OS" == "Darwin" || "$OS" == "Linux" ]]; then

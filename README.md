@@ -26,6 +26,8 @@ sudo apt install clang-format
 brew install sfml
 brew install freetype
 brew install clang-format
+brew install ccache
+brew install ninja
 ```
 
 How to Build
