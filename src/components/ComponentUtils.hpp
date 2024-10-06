@@ -308,14 +308,19 @@ inline void ApplyStyles(const std::vector<YGStyleProperty> &styles,
   }
 }
 
+struct PositionStruct {
+  float left;
+  float top;
+  float width;
+  float height;
+  PositionStruct(float l, float t, float w, float h)
+      : left(l), top(t), width(w), height(h) {}
+};
 // Placement debugging
-void LogNode(YGNodeRef node) {
-  float left = YGNodeLayoutGetLeft(node);
-  float top = YGNodeLayoutGetTop(node);
-  float width = YGNodeLayoutGetWidth(node);
-  float height = YGNodeLayoutGetHeight(node);
-  std::cout << left << std::endl;
-  std::cout << top << std::endl;
-  std::cout << width << std::endl;
-  std::cout << height << std::endl;
+void LogNode(const PositionStruct &pos) {
+  std::cout << "Left: " << pos.left << std::endl;
+  std::cout << "Top: " << pos.top << std::endl;
+  std::cout << "Width: " << pos.width << std::endl;
+  std::cout << "Height: " << pos.height << std::endl;
+  std::cout << std::endl;
 }

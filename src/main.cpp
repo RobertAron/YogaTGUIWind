@@ -42,8 +42,11 @@ int main() {
           ContainerNode::make(SX(W_8,H_8,BG_BLUE_400))
         )
       ),
-      ContainerNode::make(SX(BG_SLATE_950, FLEX, FLEX_COL, JUSTIFY_END, GROW)
-        // ButtonNode::make(SX(H_12,W_12))
+      ContainerNode::make(SX(BG_SLATE_950, FLEX, FLEX_COL, ITEMS_CENTER, JUSTIFY_CENTER, GROW),
+        ContainerNode::make(SX(FLEX_COL, ITEMS_CENTER, GAP_1),
+          ContainerNode::make(SX(W_20,H_20,BG_BLUE_400)),
+          LabelNode::make(SX(TEXT_BASE, TEXT_WHITE), "Start!")
+        )
       )
     )
   );
@@ -68,6 +71,7 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gui.draw();
     window.display();
+    sf::sleep(sf::milliseconds(10));
   }
   return 0;
 }

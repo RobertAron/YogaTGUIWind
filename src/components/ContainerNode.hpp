@@ -11,7 +11,6 @@ public:
     auto renderer = m_panel->getRenderer();
     ApplyStyles(styles, m_yogaNode);
     ApplyStyles(styles, renderer);
-    // renderer->setBackgroundColor(tgui::Color::Black)
     // clang-format off
     static const std::unordered_map<YGStyleProperty,std::function<void(tgui::PanelRenderer *)>> styleMap = {
       {BG_BLACK,    [](tgui::PanelRenderer * renderer) { renderer->setBackgroundColor(tgui::Color::Black); }},
@@ -43,8 +42,11 @@ public:
   void ApplyLayout(float parentLeft, float parentTop) override {
     float left = YGNodeLayoutGetLeft(m_yogaNode) + parentLeft;
     float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
-    float width = YGNodeLayoutGetWidth(m_yogaNode) + width;
-    float height = YGNodeLayoutGetHeight(m_yogaNode) + height;
+    float width = YGNodeLayoutGetWidth(m_yogaNode);
+    float height = YGNodeLayoutGetHeight(m_yogaNode);
+    std::cout << "Container" << std::endl;
+    LogNode(PositionStruct(left, top, width, height));
+
 
     m_panel->setPosition(left, top);
     m_panel->setSize(width, height);

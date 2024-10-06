@@ -13,7 +13,6 @@ public:
     ApplyStyles(styles, renderer);
     YGNodeSetContext(m_yogaNode, m_label.get());
     YGNodeSetMeasureFunc(m_yogaNode, &MeasureWidget);
-    YGNodeMarkDirty(m_yogaNode);
     // clang-format off
     static const std::unordered_map<YGStyleProperty,std::function<void(tgui::LabelRenderer *)>> styleMap = {
       {TEXT_WHITE,    [](tgui::LabelRenderer * renderer) { renderer->setTextColor(tgui::Color::White); }},
@@ -35,6 +34,8 @@ public:
     float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
+    std::cout << "Label" << std::endl;
+    LogNode(PositionStruct(left, top, width, height));
 
     m_label->setPosition(left, top);
     m_label->setSize(width, height);
@@ -52,11 +53,16 @@ private:
     auto label = static_cast<tgui::Label *>(
         YGNodeGetContext(node)); // Retrieve the label from context
     label->setAutoSize(true);
+    std::cout << label->getText() << std::endl;
+    auto labelAutoSize = label->getSize();
     // for max width
-    if (widthMode == YGMeasureModeExactly)
+    if (widthMode == YGMeasureModeExactly) {
       label->setMaximumTextWidth(width);
-    else if (widthMode == YGMeasureModeAtMost)
-      label->setMaximumTextWidth(width);
+    } else if (widthMode == YGMeasureModeAtMost) {
+      if (labelAutoSize.x > width) {
+        label->setMaximumTextWidth(width);
+      }
+    }
     // height will always be minimum needed from there.
     // If the actual height gets set lower, it will scroll.
     auto size = label->getSize();
