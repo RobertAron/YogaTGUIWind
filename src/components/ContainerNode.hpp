@@ -21,6 +21,7 @@ public:
       {BG_WHITE,    [](tgui::PanelRenderer * renderer) { renderer->setBackgroundColor(tgui::Color::White); }},
     };
     // clang-format on
+    renderer->setBackgroundColor(tgui::Color::Transparent);
     for (const auto &style : styles) {
       auto it = styleMap.find(style);
       if (it != styleMap.end()) {
@@ -39,16 +40,16 @@ public:
     }
   }
 
-  void ApplyLayout() override {
-    float left = YGNodeLayoutGetLeft(m_yogaNode);
-    float top = YGNodeLayoutGetTop(m_yogaNode);
-    float width = YGNodeLayoutGetWidth(m_yogaNode);
-    float height = YGNodeLayoutGetHeight(m_yogaNode);
+  void ApplyLayout(float parentLeft, float parentTop) override {
+    float left = YGNodeLayoutGetLeft(m_yogaNode) + parentLeft;
+    float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
+    float width = YGNodeLayoutGetWidth(m_yogaNode) + width;
+    float height = YGNodeLayoutGetHeight(m_yogaNode) + height;
 
     m_panel->setPosition(left, top);
     m_panel->setSize(width, height);
     for (auto &child : children) {
-      child->ApplyLayout();
+      child->ApplyLayout(left, top);
     }
   }
 

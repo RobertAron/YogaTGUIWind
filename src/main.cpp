@@ -28,12 +28,18 @@ int main() {
   // clang-format off
   auto root = RootNode::make(
     ContainerNode::make(SX(H_FULL, W_FULL, FLEX, FLEX_ROW),
-      ContainerNode::make(SX(BG_BLACK, W_96, FLEX, FLEX_COL, JUSTIFY_END),
-        LabelNode::make(SX(TEXT_LG, TEXT_WHITE),
-          "Some title here!"
+      ContainerNode::make(SX(BG_BLACK, W_96, FLEX_COL, JUSTIFY_END, P_4, GAP_4),
+        ContainerNode::make(SX(FLEX_COL),
+          LabelNode::make(SX(TEXT_4XL, TEXT_WHITE), "Some title here!"),
+          LabelNode::make(SX(TEXT_BASE, TEXT_WHITE), "Some subtitle information goes here.")
         ),
-        LabelNode::make(SX(TEXT_BASE, TEXT_WHITE),
-          "Some subtitle information goes here."
+        LabelNode::make(SX(TEXT_BASE, TEXT_WHITE), "Main information goes here! The information here is longer after grabbing you with the hook. This content actually informs you about stuff."),
+        LabelNode::make(SX(TEXT_BASE, TEXT_WHITE), "A little bit more information here."),
+        ContainerNode::make(SX(FLEX_ROW,GAP_4),
+          ContainerNode::make(SX(W_8,H_8,BG_BLUE_400)),
+          ContainerNode::make(SX(W_8,H_8,BG_BLUE_400)),
+          ContainerNode::make(SX(W_8,H_8,BG_BLUE_400)),
+          ContainerNode::make(SX(W_8,H_8,BG_BLUE_400))
         )
       ),
       ContainerNode::make(SX(BG_SLATE_950, FLEX, FLEX_COL, JUSTIFY_END, GROW)
@@ -54,8 +60,11 @@ int main() {
         window.close();
       gui.handleEvent(event);
     }
-    auto windowSize = window.getSize();
-    root->Update(windowSize);
+    auto newWindowSize = window.getSize();
+    if (newWindowSize.x != windowSize.x || newWindowSize.y != windowSize.y) {
+      windowSize = newWindowSize;
+      root->Update(windowSize);
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gui.draw();
     window.display();

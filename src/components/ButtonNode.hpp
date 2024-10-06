@@ -22,16 +22,16 @@ public:
     }
   }
 
-  void ApplyLayout() override {
-    float left = YGNodeLayoutGetLeft(m_yogaNode);
-    float top = YGNodeLayoutGetTop(m_yogaNode);
+  void ApplyLayout(float parentLeft, float parentTop) override {
+    float left = YGNodeLayoutGetLeft(m_yogaNode) + parentLeft;
+    float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
 
     m_button->setPosition(left, top);
     m_button->setSize(width, height);
     for (auto &child : children) {
-      child->ApplyLayout();
+      child->ApplyLayout(left,top);
     }
   }
 

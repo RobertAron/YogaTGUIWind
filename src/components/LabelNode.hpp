@@ -30,11 +30,12 @@ public:
 
   void AddToGui(tgui::Gui &gui) override { gui.add(m_label); }
 
-  void ApplyLayout() override {
-    float left = YGNodeLayoutGetLeft(m_yogaNode);
-    float top = YGNodeLayoutGetTop(m_yogaNode);
+  void ApplyLayout(float parentLeft, float parentTop) override {
+    float left = YGNodeLayoutGetLeft(m_yogaNode) + parentLeft;
+    float top = YGNodeLayoutGetTop(m_yogaNode) + parentTop;
     float width = YGNodeLayoutGetWidth(m_yogaNode);
     float height = YGNodeLayoutGetHeight(m_yogaNode);
+
     m_label->setPosition(left, top);
     m_label->setSize(width, height);
   }

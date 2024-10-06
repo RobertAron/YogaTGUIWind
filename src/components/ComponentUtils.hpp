@@ -5,7 +5,7 @@
 
 class DomNode {
 public:
-  virtual void ApplyLayout() = 0;
+  virtual void ApplyLayout(float parentLeft, float parentTop) = 0;
   virtual void AddToGui(tgui::Gui &gui) = 0;
   virtual ~DomNode() {}
   YGNodeRef m_yogaNode;
@@ -136,7 +136,18 @@ enum YGStyleProperty {
   BG_WHITE,
   BG_SLATE_950,
   TEXT_WHITE,
-  TEXT_BLACK
+  TEXT_BLACK,
+  P_1,
+  P_2,
+  P_3,
+  P_4,
+  P_5,
+  P_6,
+  P_8,
+  P_10,
+  P_12,
+  P_16,
+  P_20
 };
 
 inline std::vector<YGStyleProperty> SX() {
@@ -179,7 +190,6 @@ inline void ApplyStyles(const std::vector<YGStyleProperty> &styles,
                         YGNodeRef node) {
   static const std::unordered_map<YGStyleProperty,
                                   std::function<void(YGNodeRef)>>
-
       // clang-format off
       styleMap = {
         {FLEX, [](YGNodeRef node) { YGNodeStyleSetFlex(node, 1.0f); }},
@@ -276,14 +286,36 @@ inline void ApplyStyles(const std::vector<YGStyleProperty> &styles,
         {W_80, [](YGNodeRef node) { YGNodeStyleSetWidth(node, 320.0f); }},
         {W_96, [](YGNodeRef node) { YGNodeStyleSetWidth(node, 384.0f); }},
         {W_AUTO, [](YGNodeRef node) { YGNodeStyleSetWidthAuto(node); }},
-        {W_FULL, [](YGNodeRef node) { YGNodeStyleSetWidthPercent(node, 100.0f); }}
+        {W_FULL, [](YGNodeRef node) { YGNodeStyleSetWidthPercent(node, 100.0f); }},
+        {P_1, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 4.0f); }},
+        {P_2, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 8.0f); }},
+        {P_3, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 12.0f); }},
+        {P_4, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 16.0f); }},
+        {P_5, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 20.0f); }},
+        {P_6, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 24.0f); }},
+        {P_8, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 32.0f); }},
+        {P_10, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 40.0f); }},
+        {P_12, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 48.0f); }},
+        {P_16, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 64.0f); }},
+        {P_20, [](YGNodeRef node) { YGNodeStyleSetPadding(node, YGEdgeAll, 80.0f); }}
   };
   // clang-format on
-
   for (const auto &style : styles) {
     auto it = styleMap.find(style);
     if (it != styleMap.end()) {
       it->second(node);
     }
   }
+}
+
+// Placement debugging
+void LogNode(YGNodeRef node) {
+  float left = YGNodeLayoutGetLeft(node);
+  float top = YGNodeLayoutGetTop(node);
+  float width = YGNodeLayoutGetWidth(node);
+  float height = YGNodeLayoutGetHeight(node);
+  std::cout << left << std::endl;
+  std::cout << top << std::endl;
+  std::cout << width << std::endl;
+  std::cout << height << std::endl;
 }

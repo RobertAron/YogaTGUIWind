@@ -17,7 +17,7 @@ public:
     YGNodeStyleSetHeight(m_yogaNode, windowSize.y);
     YGNodeCalculateLayout(m_yogaNode, windowSize.x, windowSize.y,
                           YGDirectionLTR);
-    ApplyLayout();
+    ApplyLayout(0, 0);
   }
 
   void AddToGui(tgui::Gui &gui) override {
@@ -26,9 +26,9 @@ public:
     }
   }
 
-  void ApplyLayout() override {
+  void ApplyLayout(float parentLeft, float parentTop) override {
     for (auto &child : children) {
-      child->ApplyLayout();
+      child->ApplyLayout(0, 0);
     }
   }
   template <typename... T>
