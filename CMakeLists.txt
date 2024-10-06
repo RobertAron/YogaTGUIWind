@@ -12,7 +12,6 @@ if(CCACHE_PROGRAM)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
-
 # Default to Debug build type if not specified
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug)
@@ -30,15 +29,24 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(TGUI_BACKEND "SFML_OPENGL3")
 
-# Add Yoga and TGUI as subdirectories
+
+
+# Add Yoga, TGUI, and SFML as subdirectories
+
+add_subdirectory(external/freetype)
+add_subdirectory(external/SFML)
 add_subdirectory(external/yoga/yoga)
 add_subdirectory(external/tgui)
-
-# Find SFML (windowing required by TGUI)
 find_package(OpenGL REQUIRED)
-find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
-add_executable(main src/main.cpp)
-target_link_libraries(main PRIVATE tgui sfml-graphics sfml-window sfml-system OpenGL::GL yogacore)
 
+# Add the executable
+add_executable(main src/main.cpp)
+# Link SFML, TGUI, and Yoga libraries
+target_link_libraries(main PRIVATE tgui sfml-graphics sfml-window sfml-system OpenGL::GL yogacore freetype)
+
+
+# Include directories
+target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/external/freetype/include)
+target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/external/SFML)
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/external/yoga/yoga)
 target_include_directories(main PRIVATE ${CMAKE_SOURCE_DIR}/external/tgui/include)
